@@ -1,0 +1,15 @@
+{
+  "agent": "brief_agent",
+  "prompt_file": "instruction.txt",
+  "prompt_version": "v3",
+  "model": "claude-opus-5-5",
+  "tools": [
+    "salesforce_context",
+    "web_evidence",
+    "gong_calls"
+  ],
+  "limits": {
+    "max_tokens": 16000,
+    "effort": "medium"
+  }
+}

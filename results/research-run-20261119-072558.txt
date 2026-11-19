@@ -1,0 +1,190 @@
+Call 1: Claude is searching the M&S website. This takes about 20 to 60 seconds...
+
+0. CALL 1: CLAUDE SEARCHED THE WEB (LIVE)
+  Allowed site:     marksandspencer.com only
+  Searches run:     site:marksandspencer.com AI apprenticeships digital skills training |
+                    site:corporate.marksandspencer.com AI news
+  Pages found:      19
+
+  Code checks each fact: on the M&S site, link came back from the search, page quote attached.
+
+  PASS  On 25 March 2026, M&S said it is buying 11,000 Microsoft 365 Copilot licences, supported by
+        a training and development programme to help colleagues adopt and make full use of the AI
+        support available to them.
+        https://corporate.marksandspencer.com/newsroom/press-releases/ms-gives-every-store-manager-and-every-store-support-centre-colleague  (page date: 239 days ago)
+  PASS  M&S's 2026 annual report says that "Digital, Data and Technology is a key investment
+        priority in the year ahead" and that the company "partnered with Microsoft to roll out
+        Copilot tools to store managers and Support Centre colleagues."
+        https://corporate.marksandspencer.com/investors/our-performance-updates/2026-annual-report/stories/build-ms-we-need-be
+  PASS  The 2022 annual report says that in December M&S launched the first ever Data Science and AI
+        apprenticeship in retail, offering a 15-month Level 7 course for 10 colleagues through our
+        "BEAM Academy" digital and data learning hub.
+        https://corporate.marksandspencer.com/sites/marksandspencer/files/marks-spencer/m-and-s_ar22_strategic-report.pdf  (page date: 1640 days ago)
+  PASS  The 2023 annual report says the 2022/23 intake for the Data Science and AI apprenticeship, a
+        15-month Level 7 course, has been doubled and 200 colleagues have now been enrolled into a
+        data-upskilling apprenticeship.
+        https://corporate.marksandspencer.com/sites/marksandspencer/files/marks-spencer/investor/Annual%20Report%202023/M&S_AR23_Strategic_report.pdf  (page date: 1276 days ago)
+  PASS  A careers-site post dated 12 October 2023 says M&S's 'Digital Essentials' programme has
+        upskilled over 26,000 colleagues.
+        https://jobs.marksandspencer.com/our-stories/empowering-26000-colleagues-1  (page date: 1134 days ago)
+  Call 1 cost:      $0.1601 (2 searches)
+  Call 1 time:      9.2 seconds
+
+Call 2: Claude writes the brief from the checked facts. This takes about 10 to 15 seconds...
+
+====================================================================================================
+LIVE RESEARCH EXAMPLE: MARKS & SPENCER
+====================================================================================================
+Real public facts only. No Multiverse, Salesforce or Gong data was used.
+This is not a claim that Marks & Spencer is a prospect or customer.
+
+1. WHAT WENT IN
+  Data type:        Real public information
+  Signal:           Public web research
+  Received:         2026-11-19
+  Person:           No named contact
+  Company:          Marks & Spencer
+  Country:          United Kingdom
+  Company data:     employees: 64000, industry: Retail, uk owned and franchise stores: 1059
+  Public fact:      On 25 March 2026, M&S said it is buying 11,000 Microsoft 365 Copilot licences,
+                    supported by a training and development programme to help colleagues adopt and
+                    make full use of the AI support available to them.
+  Public fact:      M&S's 2026 annual report says that "Digital, Data and Technology is a key
+                    investment priority in the year ahead" and that the company "partnered with
+                    Microsoft to roll out Copilot tools to store managers and Support Centre
+                    colleagues."
+  Public fact:      The 2022 annual report says that in December M&S launched the first ever Data
+                    Science and AI apprenticeship in retail, offering a 15-month Level 7 course for
+                    10 colleagues through our "BEAM Academy" digital and data learning hub.
+  Public fact:      The 2023 annual report says the 2022/23 intake for the Data Science and AI
+                    apprenticeship, a 15-month Level 7 course, has been doubled and 200 colleagues
+                    have now been enrolled into a data-upskilling apprenticeship.
+  Public fact:      A careers-site post dated 12 October 2023 says M&S's 'Digital Essentials'
+                    programme has upskilled over 26,000 colleagues.
+
+2. WHAT THE RULES DECIDED (NO AI)
+  Priority:         P3
+  Overall score:    25
+  Fit score:        50
+  Timing score:     0
+  Route to:         BDR team
+  Allowed actions:  book_meeting, nurture, human_review, disqualify
+  System flags:     None
+
+3. WHAT CLAUDE WROTE
+  Recommendation:   NURTURE
+  Reason:           M&S is a relevant employer with a clear AI-adoption context, but the signal is
+                    about eight months old and timing scored 0. No named buyer has been identified
+                    and the buyer persona does not match. Past contact and customer status are also
+                    unknown, so this is not yet ready for a meeting. The BDR team should find the
+                    Copilot rollout owner and L&D/Data leads and check Salesforce before outreach.
+  Product angle:    both
+  Summary:          Marks & Spencer is a UK retailer with about 64,000 employees and 1,059 UK
+                    stores, and it is rolling out 11,000 Microsoft 365 Copilot licences to store
+                    managers and Support Centre colleagues, backed by a training programme to drive
+                    adoption. It also has a track record of data and AI apprenticeships, so the
+                    opening is AI tool adoption (Mastry) with apprenticeships as a secondary angle,
+                    though no named buyer or stated intent exists yet.
+
+  Why now:
+  - In March 2026 M&S said it is buying 11,000 Microsoft 365 Copilot licences, with a training and
+    development programme to help colleagues adopt and make full use of them. This is the Mastry use
+    case. [E9]
+  - The 2026 annual report calls Digital, Data and Technology 'a key investment priority in the year
+    ahead' and confirms the Copilot rollout with Microsoft. [E10]
+  - M&S has invested in data and AI apprenticeships before. It launched a Level 7 Data Science and
+    AI apprenticeship in retail, doubled the intake in 2022/23 and enrolled 200 colleagues in data-
+    upskilling apprenticeships. Its Digital Essentials programme upskilled over 26,000 colleagues.
+    This evidence is from 2022–2023. [E11, E12, E13]
+  - Caveat: timing was scored from the 25 March 2026 announcement, so this is background context
+    rather than a fresh signal. [E15, E3]
+
+  Check first:
+  ! no named buyer
+  ! Buyer persona match is false: no contact in the evidence matches an L&D, People, Data or AI-
+    rollout buyer role.
+  ! Salesforce and Gong are not connected, so past contact, customer status and any open deals are
+    unknown. Check before outreach, especially given M&S's existing apprenticeship programmes.
+  ! The timing signal (Copilot announcement, 25 March 2026) is about eight months old, so timing is
+    background only (timing score 0).
+  ! Apprenticeship and Digital Essentials evidence dates from 2022–2023. Current apprenticeship
+    activity and providers are unknown.
+  ! It is unknown who delivers M&S's Copilot training and development programme or how far adoption
+    has progressed.
+  ! The fit score is a default 50 because no Multiverse win-rate history was used.
+  ! No system flags were raised.
+
+  Draft message:
+  - Hello, I saw M&S is rolling out Microsoft 365 Copilot to store managers and Support Centre
+    colleagues, alongside a training programme to help people use it well. We help employers turn
+    licences into everyday use across the workforce. Would you be open to a short call to compare
+    notes on how adoption is going?
+
+  Sources used:
+  - E3 Signal: 2026-11-19
+  - E9 Public web (M&S gives every Store Manager and every Store Support Centre colleague latest AI
+    tools with 11,000 Microsoft 365 Copilot licenses): On 25 March 2026, M&S said it is buying
+    11,000 Microsoft 365 Copilot licences, supported by a training and development programme to help
+    colleagues adopt and make full use of the AI support available to them.
+    https://corporate.marksandspencer.com/newsroom/press-releases/ms-gives-every-store-manager-and-
+    every-store-support-centre-colleague
+  - E10 Public web (Build the M&S we need to be): M&S's 2026 annual report says that "Digital, Data
+    and Technology is a key investment priority in the year ahead" and that the company "partnered
+    with Microsoft to roll out Copilot tools to store managers and Support Centre colleagues."
+    https://corporate.marksandspencer.com/investors/our-performance-updates/2026-annual-
+    report/stories/build-ms-we-need-be
+  - E11 Public web (Marks and Spencer Group plc Annual Report & Financial Statements 2022 The next):
+    The 2022 annual report says that in December M&S launched the first ever Data Science and AI
+    apprenticeship in retail, offering a 15-month Level 7 course for 10 colleagues through our "BEAM
+    Academy" digital and data learning hub.
+    https://corporate.marksandspencer.com/sites/marksandspencer/files/marks-spencer/m-and-
+    s_ar22_strategic-report.pdf
+  - E12 Public web (Marks and Spencer Group plc Annual Report & Financial Statements 2023
+    Reshaping): The 2023 annual report says the 2022/23 intake for the Data Science and AI
+    apprenticeship, a 15-month Level 7 course, has been doubled and 200 colleagues have now been
+    enrolled into a data-upskilling apprenticeship.
+    https://corporate.marksandspencer.com/sites/marksandspencer/files/marks-
+    spencer/investor/Annual%20Report%202023/M&S_AR23_Strategic_report.pdf
+  - E13 Public web (Empowering 26,000 Colleagues: A spotlight on M&S’ Digital Essentials upskilling
+    programme :: M&S Careers): A careers-site post dated 12 October 2023 says M&S's 'Digital
+    Essentials' programme has upskilled over 26,000 colleagues.
+    https://jobs.marksandspencer.com/our-stories/empowering-26000-colleagues-1
+  - E15 System note: The rules scored timing from the saved signal dated 2026-03-25, so timing is
+    background, not a fresh signal.
+
+4. WHAT THE CODE CHECKED
+  PASS  Correct output format
+  PASS  Every claim has a source
+  PASS  No invented people
+  PASS  Action allowed by the rules
+  PASS  Warnings explained
+  PASS  Draft message follows the rules
+
+5. WHAT WOULD BE SAVED IN SALESFORCE
+  This demo does not write to a real Salesforce org.
+
+  Fit score            50  (read-only)
+  Timing score         0  (read-only)
+  Priority             P3  (read-only)
+  Recommended action   nurture  (rep can edit)
+  Route to             BDR team  (read-only)
+  Summary              Marks & Spencer is a UK retailer with about 64,000 employee...  (rep can edit)
+  Why now              - In March 2026 M&S said it is buying 11,000 Microsoft 365 ...  (rep can edit)
+  Product angle        both  (rep can edit)
+  System flags         Blank  (read-only)
+  Confidence           medium  (read-only)
+  Evidence used        E3: Signal / received_at E9: Public web (M&S gives every St...  (read-only)
+  Run ID               req_011ChBtYCEakpPTw26U4rVek  (read-only)
+  Created at           2026-11-19T07:26:24+00:00  (read-only)
+
+  Draft message: stays in Slack, not on the Salesforce record.
+
+  Run log (AI_Run__c):
+  Model:            claude-opus-5-5
+  Prompt:           v3
+  Cost:             $0.0516
+  Time:             16.2 seconds
+  Live checks:      6 of 6 passed
+
+  Both calls cost:  $0.2117
+

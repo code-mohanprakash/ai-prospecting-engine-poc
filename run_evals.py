@@ -20,10 +20,11 @@ import anthropic
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "src"))
 
+from agent_config import load_config  # noqa: E402
 from brief_agent import write_brief  # noqa: E402
-from checks import HARD, SOFT, run_checks  # noqa: E402
+from checks import HARD, LIVE, SOFT, TEST_ONLY, run_checks  # noqa: E402
 from evidence import apply_rules, build_evidence  # noqa: E402
-from salesforce import merge_write, to_payload  # noqa: E402
+from salesforce import merge_write, to_payload, to_run_log  # noqa: E402
 
 
 def run_case(client, case, prompt_version):
@@ -37,10 +38,12 @@ def run_case(client, case, prompt_version):
 def slack_preview(r: dict) -> str:
     c, d, b = r["case"], r["decisions"], r["result"]["brief"]
     lead = c["lead"]
+    name = f"{lead.get('first_name', '')} {lead.get('last_name', '')}".strip()
+    person = f"{name}, {lead.get('title') or 'title unknown'}" if name else "No named contact"
     lines = [
         "─" * 72,
-        f"#inbound-briefs  ·  {lead.get('first_name','')} {lead.get('last_name','')}, {lead.get('title') or 'title unknown'} @ {lead.get('company') or 'company unknown'}",
-        f"Fit: {d['fit_tier']}   Action: {b['recommended_action'].upper()}   Confidence: {b['confidence']}   Angle: {b['product_angle']}",
+        f"Private Slack DM to owner  ·  {person} @ {lead.get('company') or 'company unknown'}",
+        f"Priority: {d['priority']}   Score: {d['score'] if d['score'] is not None else 'n/a'}   Fit: {d['fit_score'] if d['fit_score'] is not None else 'n/a'}   Timing: {d['timing_score']}   Action: {b['recommended_action'].upper()}   Confidence: {b['confidence']}   Angle: {b['product_angle']}",
     ]
     if d.get("route_to"):
         lines.append(f"Routed to: {d['route_to']}")
@@ -53,7 +56,7 @@ def slack_preview(r: dict) -> str:
     if b["suggested_opener"]:
         lines += ["", "Suggested opener:", f"  \"{b['suggested_opener']}\""]
     lines += ["", "Sources:"] + [f"  {e['id']}: {e['source']} / {e['field']}" for e in r["evidence"]]
-    lines += ["[ 👍 Useful ]  [ 👎 Wrong ]  [ ✏️ Edit in Salesforce ]", "─" * 72]
+    lines += ["[ 👍 Useful ]  [ 👎 Wrong ]  [ ✏️ Edit ]  [ Research in Claude ]", "─" * 72]
     return "\n".join(lines)
 
 
@@ -61,7 +64,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--only", help="run one case id, e.g. TC09")
     ap.add_argument("--show", help="print briefs as a rep sees them, e.g. TC04 or TC04,TC09")
-    ap.add_argument("--prompt", default="v2", help="prompt version in prompts/brief_<v>.md")
+    ap.add_argument("--prompt", default=load_config()["prompt_version"], help="prompt version from config.json, or an older prompts/brief_<v>.md")
     args = ap.parse_args()
 
     cases = json.loads((ROOT / "data" / "test_cases.json").read_text())
@@ -102,6 +105,7 @@ def main() -> int:
     print("\nSummary")
     print(f"  Hard checks: {n - hard_fail}/{n} cases pass all hard checks  (ship bar: {n}/{n})")
     print(f"  Soft checks: {soft_pass}/{soft_total} pass  (target: 90%+, failures reviewed by hand)")
+    print(f"  Live checks on every real brief: {len(LIVE)}. Test-set only: {', '.join(TEST_ONLY)}")
     print(f"  Cost: ${sum(costs):.3f} total, ${sum(costs)/n:.4f} per brief (measured from token usage)")
     print(f"  Latency: median {lat[n//2]}s, max {lat[-1]}s per brief")
     errors = [r for r in runs if r["result"].get("error")]
@@ -123,7 +127,8 @@ def main() -> int:
         saved.append({"id": r["case"]["id"], "title": r["case"]["title"], "decisions": r["decisions"],
                       "run": {k: v for k, v in r["result"].items() if k != "brief"}, "brief": r["result"].get("brief"),
                       "checks": {k: {"pass": ok, "detail": msg} for k, (ok, msg) in r["checks"].items()},
-                      "salesforce_update": merge_write({}, payload)[0] if payload else None})
+                      "salesforce_update": merge_write({}, payload)[0] if payload else None,
+                      "run_log": to_run_log(r["result"], r["checks"])})
     (out / f"results-{args.prompt}-{stamp}.json").write_text(json.dumps(saved, ensure_ascii=False, indent=2))
     print(f"\nSaved: results/results-{args.prompt}-{stamp}.json")
 
@@ -137,6 +142,9 @@ def main() -> int:
                 print("\nSalesforce update (AI_* fields only):")
                 for k, v in payload.items():
                     print(f"  {k}: {str(v)[:90]}")
+                print("\nRun log (AI_Run__c):")
+                for k, v in to_run_log(r["result"], r["checks"]).items():
+                    print(f"  {k}: {v}")
     return 0 if hard_fail == 0 else 1
 
 

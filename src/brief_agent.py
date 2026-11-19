@@ -4,16 +4,18 @@ from __future__ import annotations
 
 import json
 import time
-from pathlib import Path
 from typing import Literal
 
 import anthropic
 from pydantic import BaseModel, Field
 
-MODEL = "claude-opus-5-5"
+from agent_config import ROOT, load_config
+
+CONFIG = load_config()
+MODEL = CONFIG["model"]
 # Claude API list prices for this model, USD per million tokens (input, output).
 PRICE_PER_MTOK = (4.00, 20.00)
-PROMPT_DIR = Path(__file__).resolve().parent.parent / "prompts"
+PROMPT_DIR = ROOT / "prompts"
 
 Action = Literal["book_meeting", "nurture", "human_review", "disqualify", "route_to_owner"]
 
@@ -43,12 +45,14 @@ class Brief(BaseModel):
     confidence: Literal["high", "medium", "low"]
 
 
-def load_prompt(version: str = "v2") -> str:
+def load_prompt(version: str = CONFIG["prompt_version"]) -> str:
+    if version == CONFIG["prompt_version"]:
+        return (ROOT / CONFIG["prompt_file"]).read_text()
     return (PROMPT_DIR / f"brief_{version}.md").read_text()
 
 
 def write_brief(client: anthropic.Anthropic, evidence: list[dict], decisions: dict,
-                prompt_version: str = "v2") -> dict:
+                prompt_version: str = CONFIG["prompt_version"]) -> dict:
     """One Claude call. Returns the brief plus run metadata (latency, tokens, cost, errors)."""
     user = (
         "EVIDENCE:\n" + json.dumps(evidence, ensure_ascii=False, indent=1)
@@ -59,11 +63,11 @@ def write_brief(client: anthropic.Anthropic, evidence: list[dict], decisions: di
     try:
         resp = client.beta.messages.parse(
             model=MODEL,
-            max_tokens=16000,
+            max_tokens=CONFIG["limits"]["max_tokens"],
             system=load_prompt(prompt_version),
             messages=[{"role": "user", "content": user}],
             output_format=Brief,
-            output_config={"effort": "medium"},
+            output_config={"effort": CONFIG["limits"]["effort"]},
             # If a safety classifier declines, the API retries on a fallback model in the same call.
             betas=["server-side-fallback-2026-07-01"],
             fallbacks="default",

@@ -1,0 +1,35 @@
+
+AI Prospecting Engine: proof of concept
+
+ Setup
+   make key           Load the Claude API key
+   make tests         Run the code tests (no AI calls)
+
+ Test set (mock data)
+   make all           Run all 10 test cases and summarise the checks
+   make inbound       One inbound lead in detail (TC01)
+   make outbound      One outbound signal in detail (TC04)
+   make safety        Prompt-injection test in detail (TC09)
+
+ Live research (real public data)
+   make search        Call 1: Claude searches the company's own website.
+                      Code checks every fact before it is saved.
+   make brief         Call 2: Claude writes the brief from the checked facts,
+                      with no web access.
+   make research      Both calls in one go
+   make real          Brief from saved Marks & Spencer facts (no search)
+
+ Options for search and research (default: Marks & Spencer)
+   COMPANY="Tesco"    Company name. Set together with DOMAIN.
+   DOMAIN=tesco.com   Company website. Search is limited to this domain.
+   INDUSTRY=Retail    Used for fit. Without it, fit is not scored.
+   EMPLOYEES=330000   Under 250 staff halves fit.
+   COUNTRY="Germany"  Default is United Kingdom.
+
+   Example:
+   make search COMPANY="Tesco" DOMAIN=tescoplc.com INDUSTRY=Retail EMPLOYEES=330000
+   make brief
+
+ Housekeeping
+   make forget-key    Remove the saved API key
+

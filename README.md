@@ -4,10 +4,10 @@ One AI step from the design, built end to end with mock data:
 
 ```
 signal + Salesforce context
-   → 1. rules (code): fit tier, flags, routing, allowed actions
+   → 1. rules (code): fit score, timing score, priority, flags, routing, allowed actions
    → 2. Claude: brief as validated JSON, every claim cited to evidence IDs
    → 3. checks (code): is it good enough to show a rep?
-   → Salesforce payload (AI_* fields only) + Slack preview
+   → Salesforce payload (AI_* fields only) + AI_Run__c log + Slack preview
 ```
 
 The same step serves inbound (web form, event, referral) and outbound (Floqer signal).
@@ -20,22 +20,28 @@ Python 3.12. From this folder:
 uv venv --python 3.12 .venv
 uv pip install --python .venv/bin/python -r requirements.txt
 export ANTHROPIC_API_KEY=...            # your key, never committed
-.venv/bin/python -m pytest -q tests     # 23 fast tests, no API calls
+.venv/bin/python -m pytest -q tests     # 29 fast tests, no API calls
 .venv/bin/python run_evals.py --show TC04
 ```
 
-`run_evals.py` runs all 10 cases in parallel, prints a pass/fail table with cost and latency per brief, and saves everything to `results/`. `--show TC04,TC09` also prints briefs the way a rep would see them in Slack, plus the Salesforce fields it would write. `--only TC09` runs one case. `--prompt v1` runs the earlier prompt against the same cases (v2 is the default).
+For a clearer live demo, put the key in `~/Desktop/key.txt`, then use `make key`, `make all`, `make inbound`, `make outbound`, `make safety`, `make search`, `make brief` or `make real`. Run `make help` for every command and what it shows.
+
+`run_evals.py` runs all 10 cases in parallel, prints a pass/fail table with cost and latency per brief, and saves everything to `results/`. `--show TC04,TC09` also prints briefs the way a rep would see them in Slack, plus the Salesforce fields it would write. `--only TC09` runs one case. The current prompt and settings come from `instruction.txt` and `config.json`. `--prompt v1` or `--prompt v2` runs an older prompt file kept for history.
 
 ## Files
 
 | File | What it is |
 |---|---|
-| `prompts/brief_v2.md` | The prompt in use: what the model does and never does (`brief_v1.md` kept for comparison) |
-| `src/evidence.py` | Numbers every fact (E1, E2…) and applies the rules: fit tier, flags, routing, allowed actions |
+| `Makefile`, `demo.py` | Short demo commands and clear terminal output |
+| `config.json` | The model, limits and mock tools this agent runs |
+| `instruction.txt` | The prompt in use: what the model does and never does (`prompts/` keeps v1 and v2 for comparison) |
+| `src/evidence.py` | Runs the mock tools, numbers every fact (E1, E2…) and applies the rules: flags, routing, allowed actions |
+| `src/scoring.py` | Fit score, timing score and priority, using rules only |
 | `src/brief_agent.py` | The Claude call (`claude-opus-5-5`, structured JSON via Pydantic, server-side fallback on refusal), with cost and latency |
 | `src/checks.py` | The quality checks |
-| `src/salesforce.py` | Field mapping and the rep-edit rule (rep's edit wins) |
+| `src/salesforce.py` | The 13 AI fields, the 4 fields reps can edit, the lock rule and the `AI_Run__c` log |
 | `data/test_cases.json` | 10 test cases with expected results; all names are fictional |
+| `data/segment_history.json` | Mock win-rate history used by the fit score |
 | `tests/` | Code tests: the rules, the Salesforce write rule, and proof that the checks catch deliberately bad briefs |
 
 ## Test cases
@@ -68,7 +74,21 @@ export ANTHROPIC_API_KEY=...            # your key, never committed
 
 A model confidence score is shown to the rep but never used as evidence of accuracy.
 
-## Results (measured, 16 Nov 2026)
+## Current results (prompt v3, 19 Nov 2026)
+
+Same 10 mock cases, 3 runs, with fit, timing and priority rules included:
+
+| Measure | Result |
+|---|---|
+| Briefs passing all hard checks | 30/30 |
+| Edge cases handled | 18/18 runs |
+| Soft checks | 59/60 |
+| Average brief-writing cost | $0.030 |
+| Median latency | 10.1s |
+
+The one soft failure was a TC06 draft opener at 65 words, above the 60-word limit.
+
+## Results before scoring was added (prompt v1 and v2, 16 Nov 2026)
 
 Same 10 cases, 3 runs per prompt version:
 
@@ -83,15 +103,15 @@ Same 10 cases, 3 runs per prompt version:
 
 ## Design choices
 
-- **Rules decide, the model explains.** Fit tier and routing are rules, not AI: cheap, stable, auditable. The model only chooses from the actions the rules allow. Here they are code to keep the demo small; in production they would be settings RevOps can change.
+- **Rules decide, the model explains.** Fit, timing, priority and routing are rules, not AI: cheap, stable, auditable. The model only chooses from the actions the rules allow. Here they are code to keep the demo small; in production they would be settings RevOps can change.
 - **The model never sees raw systems.** Code gathers evidence and numbers it; the model can only cite those numbers.
 - **Prospect text is untrusted.** It is labelled as such in the evidence, and TC09 tests it.
-- **The engine writes only its own AI_* fields.** If a rep edits one, it is locked for that record and the rep's version wins (`tests/test_rules_and_salesforce.py`).
-- **The draft opener goes to Slack, not Salesforce.** The rep edits and sends it from there. Salesforce keeps the facts the next person needs: tier, action, why now, evidence.
+- **The engine writes only its own AI_* fields.** Reps can edit four of them. If a rep edits one, it is locked for that record and the rep's version wins (`tests/test_rules_and_salesforce.py`).
+- **The draft opener goes to Slack, not Salesforce.** The rep edits and sends it from there. Salesforce keeps the facts the next person needs: scores, priority, action, why now and evidence.
 
 ## Not in this proof of concept
 
-Live Salesforce, LeanData, Slack and enrichment connections (mock data shows the logic; wiring is configuration), outbound list building, and an LLM judge for opener quality (would be checked against SDR ratings before use).
+Live Salesforce, LeanData, Workato, AWS, Slack and enrichment connections, plus real win-rate data (mock data shows the logic; wiring is configuration), outbound list building, and an LLM judge for opener quality (would be checked against SDR ratings before use).
 
 ## How AI was used
 

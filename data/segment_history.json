@@ -1,0 +1,34 @@
+{
+  "_note": "Mock win-rate history for the demo. In production this comes from closed Salesforce Opportunities.",
+  "overall_win_rate": 0.2,
+  "segments": {
+    "UK|Retail": {
+      "deals": 120,
+      "wins": 34
+    },
+    "UK|Banking": {
+      "deals": 60,
+      "wins": 15
+    },
+    "UK|Logistics": {
+      "deals": 40,
+      "wins": 10
+    },
+    "UK|Healthcare": {
+      "deals": 80,
+      "wins": 24
+    },
+    "UK|Utilities": {
+      "deals": 50,
+      "wins": 12
+    },
+    "UK|Insurance": {
+      "deals": 30,
+      "wins": 6
+    },
+    "DACH|Engineering": {
+      "deals": 15,
+      "wins": 3
+    }
+  }
+}

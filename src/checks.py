@@ -11,6 +11,8 @@ import re
 
 HARD = ["valid_output", "citations_valid", "no_invented_contacts", "action_allowed", "action_correct"]
 SOFT = ["flags_explained", "opener_rules"]
+TEST_ONLY = ["action_correct"]  # needs a known right answer, so it runs on the test set only
+LIVE = [name for name in HARD + SOFT if name not in TEST_ONLY]
 
 FLAG_WORDS = {
     "personal_email": ["personal", "gmail", "email"],

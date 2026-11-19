@@ -21,7 +21,7 @@ GOOD = {
     "product_angle": "mastry",
     "angle_reason": {"text": "Viewed the Mastry page three times", "evidence_ids": ["E16"]},
     "recommended_action": "book_meeting",
-    "action_reason": "Tier A buyer with a clear request",
+    "action_reason": "P1 buyer with a clear request",
     "missing_or_conflicting": [],
     "suggested_opener": "Hi Priya, thanks for getting in touch about Copilot adoption at Northwind. Happy to share how other retailers get head office teams using it. Would a short call this week help?",
     "confidence": "high",

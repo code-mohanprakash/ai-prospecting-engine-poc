@@ -1,0 +1,71 @@
+{
+  "id": "REAL01",
+  "title": "Real public example: Marks & Spencer Copilot rollout",
+  "kind": "real_public",
+  "channel": "outbound_signal",
+  "signal": {
+    "source": "Public web research",
+    "received_at": "2026-11-19"
+  },
+  "lead": {
+    "first_name": "",
+    "last_name": "",
+    "title": "",
+    "email": "",
+    "company": "Marks & Spencer",
+    "country": "United Kingdom"
+  },
+  "account": null,
+  "open_opportunities": [],
+  "enrichment": {
+    "public company page": {
+      "employees": 64000,
+      "industry": "Retail",
+      "uk_owned_and_franchise_stores": 1059
+    }
+  },
+  "web_activity": [],
+  "gong": [],
+  "floqer_signals": [],
+  "public_facts": [
+    {
+      "fact": "M&S announced it is buying 11,000 Microsoft 365 Copilot licences for every Store Manager and every Store Support Centre colleague. The announced rollout size is 11,000 colleagues.",
+      "published": "2026-03-25",
+      "source": "M&S press release",
+      "url": "https://corporate.marksandspencer.com/newsroom/press-releases/ms-gives-every-store-manager-and-every-store-support-centre-colleague"
+    },
+    {
+      "fact": "M&S said the licence purchase is backed by an AI training and development programme to help colleagues adopt the tools.",
+      "published": "2026-03-25",
+      "source": "M&S press release",
+      "url": "https://corporate.marksandspencer.com/newsroom/press-releases/ms-gives-every-store-manager-and-every-store-support-centre-colleague"
+    },
+    {
+      "fact": "M&S said Store Managers can use the tools for sales insights, meeting notes, shift rotas and handovers.",
+      "published": "2026-03-25",
+      "source": "M&S press release",
+      "url": "https://corporate.marksandspencer.com/newsroom/press-releases/ms-gives-every-store-manager-and-every-store-support-centre-colleague"
+    },
+    {
+      "fact": "M&S lists 64,000 colleagues and 1,059 UK owned and franchise stores for the whole company. These are company totals, not the size of the Copilot rollout.",
+      "source": "M&S key facts and figures",
+      "url": "https://corporate.marksandspencer.com/about-us/key-facts-figures"
+    }
+  ],
+  "system_notes": [
+    "The research date is 2026-11-19. The M&S announcement is from 2026-03-25, so it is background context and not a fresh buying signal.",
+    "Salesforce and Gong are not connected, so past contact, customer status and open deals are unknown.",
+    "No Multiverse win-rate history was used, so the fit score starts at 50."
+  ],
+  "scoring": {
+    "region": "UK",
+    "industry": "Retail",
+    "use_segment_history": false,
+    "signals": [
+      {
+        "type": "ai_rollout",
+        "date": "2026-03-25"
+      }
+    ]
+  }
+}

@@ -1,11 +1,13 @@
 """Step 1 (code, no AI): turn a signal into a numbered evidence pack and apply the hard rules.
 
-The rules here are deliberately simple and auditable. They are ASSUMPTIONS for the
-proof of concept; in the real system RevOps would own them and they would be checked
-against won/lost history in Salesforce.
+The tools here are mock versions of the production Workato MCP tools. config.json names
+which ones run. The rules are assumptions RevOps would own in the real system.
 """
 
 from __future__ import annotations
+
+from agent_config import load_config
+from scoring import score_case
 
 PERSONAL_EMAIL_DOMAINS = {"gmail.com", "googlemail.com", "hotmail.com", "outlook.com",
                           "yahoo.com", "icloud.com", "live.com", "aol.com", "proton.me"}
@@ -20,14 +22,46 @@ DACH_COUNTRIES = {"germany", "austria", "switzerland", "deutschland"}
 ALL_ACTIONS = ["book_meeting", "nurture", "human_review", "disqualify", "route_to_owner"]
 
 
-def build_evidence(case: dict) -> list[dict]:
-    """Flatten everything we know into numbered facts the model must cite."""
+def salesforce_context(case: dict, add) -> None:
+    lead = case.get("lead") or {}
+    name = " ".join(p for p in [lead.get("first_name"), lead.get("last_name")] if p)
+    add("Salesforce Lead", "name", name)
+    for f in ["title", "email", "company", "country"]:
+        add("Salesforce Lead", f, lead.get(f))
+    acct = case.get("account")
+    if acct:
+        for f, v in acct.items():
+            add("Salesforce Account", f, v)
+    for opp in case.get("open_opportunities") or []:
+        add("Salesforce Opportunity (open)", "opportunity", opp)
+
+
+def web_evidence(case: dict, add) -> None:
+    for a in case.get("web_activity") or []:
+        add("Web activity", "page_view", a)
+
+
+def gong_calls(case: dict, add) -> None:
+    for g in case.get("gong") or []:
+        add("Gong", "call_snippet", g)
+
+
+TOOLS = {"salesforce_context": salesforce_context, "web_evidence": web_evidence, "gong_calls": gong_calls}
+
+
+def build_evidence(case: dict, tools: list[str] | None = None) -> list[dict]:
+    """Flatten the signal, enrichment and configured tool results into numbered facts."""
+    enabled = load_config()["tools"] if tools is None else tools
     items: list[dict] = []
 
     def add(source: str, field: str, value) -> None:
         if value in (None, "", [], {}):
             return
         items.append({"id": f"E{len(items) + 1}", "source": source, "field": field, "value": value})
+
+    def run(name: str) -> None:
+        if name in enabled:
+            TOOLS[name](case, add)
 
     sig = case["signal"]
     add("Signal", "channel", case["channel"])
@@ -36,28 +70,13 @@ def build_evidence(case: dict) -> list[dict]:
     # Free text from the outside world: data, never instructions.
     add("Signal (UNTRUSTED text from the prospect)", "message", sig.get("message"))
 
-    lead = case.get("lead") or {}
-    name = " ".join(p for p in [lead.get("first_name"), lead.get("last_name")] if p)
-    add("Salesforce Lead", "name", name)
-    for f in ["title", "email", "company", "country"]:
-        add("Salesforce Lead", f, lead.get(f))
-
-    acct = case.get("account")
-    if acct:
-        for f, v in acct.items():
-            add("Salesforce Account", f, v)
-    for opp in case.get("open_opportunities") or []:
-        add("Salesforce Opportunity (open)", "opportunity", opp)
-
+    run("salesforce_context")
     for provider, data in (case.get("enrichment") or {}).items():
         if data:
             for f, v in data.items():
                 add(f"Enrichment ({provider.title()})", f, v)
-
-    for a in case.get("web_activity") or []:
-        add("Web activity", "page_view", a)
-    for g in case.get("gong") or []:
-        add("Gong", "call_snippet", g)
+    run("web_evidence")
+    run("gong_calls")
     for s in case.get("floqer_signals") or []:
         add("Floqer", "buying_signal", s)
     return items
@@ -87,18 +106,8 @@ def apply_rules(case: dict) -> dict:
     flags: list[str] = []
     employees, conflict = _employee_count(case)
     persona = any(k in title for k in BUYER_TITLE_KEYWORDS)
-
     if conflict:
-        tier = "unknown"
         flags.append("conflicting_employee_count")
-    elif employees is None:
-        tier = "unknown"
-    elif employees >= 1000:
-        tier = "A" if persona else "B"
-    elif employees >= 250:
-        tier = "B" if persona else "C"
-    else:
-        tier = "C"
 
     personal = domain in PERSONAL_EMAIL_DOMAINS
     if personal:
@@ -131,7 +140,7 @@ def apply_rules(case: dict) -> dict:
     owner_team = route_to or ("BDR team" if case["channel"].startswith("outbound") else "SDR team")
 
     return {
-        "fit_tier": tier,
+        **score_case(case, employees, conflict),
         "employees_agreed": employees,
         "buyer_persona_match": persona,
         "flags": flags,
